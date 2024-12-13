@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "234923406394",
+    "project_id": "kukhurikaa-28c9d",
+    "storage_bucket": "kukhurikaa-28c9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234923406394:android:c28fe7ab038168e5c23103",
+        "android_client_info": {
+          "package_name": "com.example.kukhurikaa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXEsIo1MoxjbPoOkjoUsqT8AXeSw6sKZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

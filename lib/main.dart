@@ -1,13 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:kukhurikaa/pages/dashboard_page.dart';
-import 'package:kukhurikaa/providers/sensor_data_provider.dart';
+import 'package:kukhurikaa/pages/login_page.dart';
+import 'package:kukhurikaa/pages/sign_up_page.dart';
+import 'package:kukhurikaa/pages/wrapper.dart';
+import 'package:kukhurikaa/providers/control_provider.dart';
+import 'package:kukhurikaa/providers/control_state.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-      create: (context) => SensorDataProvider(),
+      create: (context) => ControlState(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => ControlProvider(),
     )
   ], child: MainApp()));
 }
@@ -36,7 +45,11 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: DashboardPage(),
+      home: Wrapper(),
+      routes: {
+        '/dashboard_page': (context) => const DashboardPage(),
+        '/signup': (context) => const SignUpPage(),
+      },
     );
   }
 }
