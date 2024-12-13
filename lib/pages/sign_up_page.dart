@@ -1,7 +1,58 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kukhurikaa/pages/dashboard_page.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  // final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
+
+  void _signUp() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Passwords do not match!'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Register the user using email and password
+      await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text, // Use email provided by the user
+        password: _passwordController.text,
+      );
+      // Navigate to the home screen or next page
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardPage()),
+        (route) => false,
+      ); // This ensures all previous routes are removed); // Replace with your home screen
+    } on FirebaseAuthException catch (e) {
+      // Handle errors
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message ?? 'An error occurred'),
+      ));
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,29 +63,36 @@ class SignUpPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Image.asset('assets/logo.png', width: 100), // Logo
             SizedBox(height: 20),
-            Text('Kukhuri Kaa',
-                style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              'Kukhuri Kaa',
+              style: TextStyle(
+                fontSize: 68,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             SizedBox(height: 40),
+            // TextField(
+            //   // controller: _fullNameController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Full Name',
+            //     prefixIcon: Icon(Icons.person),
+            //     border: OutlineInputBorder(),
+            //   ),
+            // ),
+            // SizedBox(height: 20),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Full Name',
-                prefixIcon: Icon(Icons.person),
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.emailAddress,
             ),
             SizedBox(height: 20),
             TextField(
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.phone,
-            ),
-            SizedBox(height: 20),
-            TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -44,6 +102,7 @@ class SignUpPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             TextField(
+              controller: _confirmPasswordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
@@ -52,21 +111,32 @@ class SignUpPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                // Handle sign-up logic here
-              },
-              child: Text('Sign Up'),
-            ),
+            _isLoading
+                ? Center(
+                    child:
+                        CircularProgressIndicator()) // Show loader when logging in
+                : ElevatedButton(
+                    onPressed: _signUp,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                // Navigate back to Login page
                 Navigator.pop(context);
               },
               child: Text(
                 'Already have an account? Login',
-                style: TextStyle(color: Colors.blue, fontSize: 18),
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
