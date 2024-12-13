@@ -4,11 +4,11 @@ import {
   getChickens,
   updateChicken,
 } from "../controllers/chicken.controller..js";
-// import verifyFirebaseToken from "../middlewares/firebaseAuth.middleware.js";
+import verifyFirebaseToken from "../middlewares/firebaseAuth.middleware.js";
 
 const router = express.Router();
 
-// router.use(verifyFirebaseToken); // Protect all routes
+router.use(verifyFirebaseToken); // Protect all routes
 
 router.post("/", addChicken);
 router.get("/", getChickens);
