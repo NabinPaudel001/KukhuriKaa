@@ -33,3 +33,4 @@ package-lock.json
 *.bak
 *.swp
 *.swo
+backend/config/*.json
