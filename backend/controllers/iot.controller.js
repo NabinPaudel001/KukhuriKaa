@@ -1,20 +1,22 @@
-import admin from "../config/firebaseAdmin.js";
-import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
-import ApiResponse from "../utils/apiResponse.js";
 
-export const getSensorData = asyncHandler(async (req, res) => {
-  const doc = await admin
-    .firestore()
-    .collection("sensorData")
-    .doc(req.userId)
-    .get();
+// Reference to WebSocket server
+let wssInstance = null;
 
-  if (!doc.exists) throw new ApiError(404, "No IoT data found");
+// Setter to initialize WebSocket server
+export const setWebSocketServer = (wss) => {
+  wssInstance = wss;
+};
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, doc.data(), "Sensor data retrieved successfully")
-    );
-});
+// Function to handle WebSocket-triggered IoT actions
+export const performIoTAction = (action) => {
+  if (action === "turn_on") {
+    console.log("Turning on IoT device");
+    // Add device-specific code here
+  } else if (action === "turn_off") {
+    console.log("Turning off IoT device");
+    // Add device-specific code here
+  } else {
+    console.log("Unknown action:", action);
+  }
+};
