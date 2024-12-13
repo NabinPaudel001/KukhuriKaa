@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:kukhurikaa/components/circular_progress.dart';
-import 'package:kukhurikaa/components/control_card.dart';
+import 'package:kukhurikaa/components/dashboard_content.dart';
 import 'package:kukhurikaa/pages/analytics_page.dart';
 import 'package:kukhurikaa/pages/news_page.dart';
-import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -121,106 +119,5 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ));
-  }
-}
-
-class DashboardContent extends StatefulWidget {
-  const DashboardContent({super.key});
-
-  @override
-  State<DashboardContent> createState() => _DashboardContentState();
-}
-
-class _DashboardContentState extends State<DashboardContent> {
-  int _temperature = 24; // Default temperature value
-  int _humidity = 80; // Default humidity value
-
-  void _incrementTemperature() {
-    setState(() {
-      _temperature++;
-    });
-  }
-
-  void _decrementTemperature() {
-    setState(() {
-      if (_temperature > 0) _temperature--;
-    });
-  }
-
-  void _incrementHumidity() {
-    setState(() {
-      if (_humidity < 100) _humidity++;
-    });
-  }
-
-  void _decrementHumidity() {
-    setState(() {
-      if (_humidity > 0) _humidity--;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CircularProgress(
-                  title: "Temperature",
-                  progress: _temperature.toDouble(),
-                  unit: "°C",
-                  foregroundColor: Colors.red,
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                CircularProgress(
-                  title: "Humidity",
-                  progress: _humidity.toDouble(),
-                  unit: '%',
-                  foregroundColor: Colors.blue,
-                ),
-              ],
-            ),
-            // Row for temperature and humidity control
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ControlCard(
-                  title: 'Target Temperature',
-                  value: '$_temperature°C',
-                  onIncrement: _incrementTemperature,
-                  onDecrement: _decrementTemperature,
-                ),
-                SizedBox(width: 16),
-                ControlCard(
-                  title: 'Target Humidity',
-                  value: '$_humidity%',
-                  onIncrement: _incrementHumidity,
-                  onDecrement: _decrementHumidity,
-                ),
-              ],
-            ),
-            // Example list of items (can be a list of recent alerts, logs, etc.)
-            ListTile(
-              leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: High Temperature'),
-              subtitle: Text('The temperature has exceeded the safe limit!'),
-            ),
-            ListTile(
-              leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: Low Humidity'),
-              subtitle: Text('The humidity is below the recommended level!'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

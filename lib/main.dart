@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:kukhurikaa/pages/dashboard_page.dart';
-import 'package:kukhurikaa/providers/sensor_data_provider.dart';
+import 'package:kukhurikaa/pages/login_page.dart';
+import 'package:kukhurikaa/pages/sign_up_page.dart';
+import 'package:kukhurikaa/providers/control_provider.dart';
+import 'package:kukhurikaa/providers/control_state.dart';
+// import 'package:kukhurikaa/providers/control_state.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-      create: (context) => SensorDataProvider(),
+      create: (context) => ControlState(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => ControlProvider(),
     )
   ], child: MainApp()));
 }
@@ -36,7 +43,11 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: DashboardPage(),
+      home: const LoginPage(),
+      routes: {
+        '/signup': (context) =>
+            const SignUpPage(), // Define a route for the sign-up page
+      },
     );
   }
 }
