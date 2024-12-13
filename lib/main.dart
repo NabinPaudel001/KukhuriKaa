@@ -36,8 +36,7 @@ class MainApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 100, 100)),
         appBarTheme: AppBarTheme(
           backgroundColor: Color.fromARGB(255, 255, 233, 233),
-          elevation: 0, // Flat AppBar (Material 3 style)
-          centerTitle: true, // Optional: Center titles
+          elevation: 0,
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
