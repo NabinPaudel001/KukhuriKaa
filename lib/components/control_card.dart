@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
 
-class ControlCard extends StatelessWidget {
+class ControlCard extends StatefulWidget {
   final String title;
-  final String value;
-  final VoidCallback onIncrement;
-  final VoidCallback onDecrement;
+  final bool initialState;
+  final ValueChanged<bool> onToggle;
   const ControlCard({
     super.key,
     required this.title,
-    required this.value,
-    required this.onIncrement,
-    required this.onDecrement,
+    this.initialState = false,
+    required this.onToggle,
   });
+
+  @override
+  State<ControlCard> createState() => _ControlCardState();
+}
+
+class _ControlCardState extends State<ControlCard> {
+  late bool isControlOn;
+
+  void initState() {
+    super.initState();
+    isControlOn = widget.initialState; // Set initial toggle state
+  }
+
+  void _toggleControl(bool value) {
+    setState(() {
+      isControlOn = value;
+    });
+    widget.onToggle(value); // Notify parent of the change
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,35 +50,22 @@ class ControlCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              value,
+              widget.title,
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall
                   ?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  onPressed: onDecrement,
-                  icon: Icon(
-                    Icons.remove,
-                    color: Colors.red,
-                  ),
-                ),
-                IconButton(
-                  onPressed: onIncrement,
-                  icon: Icon(Icons.add, color: Colors.green),
-                ),
-              ],
+            SwitchListTile(
+              value: isControlOn,
+              onChanged: _toggleControl,
+              title: Text(
+                isControlOn ? 'Control On' : 'Control Off',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              activeColor: Theme.of(context).colorScheme.primary,
+              contentPadding: EdgeInsets.zero,
             ),
           ],
         ),
