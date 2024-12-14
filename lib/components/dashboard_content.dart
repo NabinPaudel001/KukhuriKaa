@@ -169,15 +169,15 @@ class _DashboardContentState extends State<DashboardContent> {
               ],
             ),
             // Example list of items (can be a list of recent alerts, logs, etc.)
+            // ListTile(
+            //   leading: Icon(Icons.warning, color: Colors.red),
+            //   title: Text('Alert: High Temperature'),
+            //   subtitle: Text('The temperature has exceeded the safe limit!'),
+            // ),
             ListTile(
               leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: High Temperature'),
-              subtitle: Text('The temperature has exceeded the safe limit!'),
-            ),
-            ListTile(
-              leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: Low Humidity'),
-              subtitle: Text('The humidity is below the recommended level!'),
+              title: Text('Alert: High Humidity'),
+              subtitle: Text('The humidity is above the recommended level!'),
             ),
           ],
         ),
