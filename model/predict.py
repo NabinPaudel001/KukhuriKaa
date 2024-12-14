@@ -59,6 +59,10 @@ if __name__ == "__main__":
     news_data = fetch_news_titles(api_url)
     news_data.append({"description": "Further bird flu cases confirmed at farm", 
                       "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
+    news_data.append({"description": "10 Chicken Breeds for Your Farm", 
+                      "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"})
+    news_data.append({"description": "Avian flu is killing chickens at Pasco-area poultry operation. More being euthanized", 
+                      "url": "https://www.tri-cityherald.com/news/business/agriculture/article294069399.html"})
 
     # Predict for each news title
     output = []
