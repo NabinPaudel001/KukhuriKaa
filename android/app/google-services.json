@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "513706933844",
+    "firebase_url": "https://kukhurikaa-66d69-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "kukhurikaa-66d69",
+    "storage_bucket": "kukhurikaa-66d69.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513706933844:android:0895fb30f407f5609b37c1",
+        "android_client_info": {
+          "package_name": "com.example.kukhurikaa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkdvyyx5AyoXeVfiNUdJDNo5BsI9zELgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
