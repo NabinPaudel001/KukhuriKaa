@@ -1,11 +1,11 @@
-import express from "express";
-import { getSensorData } from "../controllers/iot.controller.js";
-import verifyFirebaseToken from "../middlewares/firebaseAuth.middleware.js";
+// import express from "express";
+// // import { getSensorData } from "../controllers/iot.controller.js";
+// import verifyFirebaseToken from "../middlewares/firebaseAuth.middleware.js";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.use(verifyFirebaseToken);
+// router.use(verifyFirebaseToken);
 
-router.get("/", getSensorData);
+// router.get("/", getSensorData);
 
-export default router;
+// export default router;
