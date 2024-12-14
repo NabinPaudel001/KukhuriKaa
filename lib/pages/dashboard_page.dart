@@ -27,7 +27,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final List<Widget> _pages = [
     // Placeholder screens for each tab
     AnalyticsPage(),
-    ChickensPage(),
+    ChickenManagementPage(),
     DashboardContent(),
     NewsPage(),
     AccountPage(),
@@ -123,6 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
             SliverFillRemaining(
+              hasScrollBody: true,
               child: _pages[_selectedIndex], // Display the selected screen
             ),
           ],
