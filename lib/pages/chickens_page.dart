@@ -8,18 +8,18 @@ class ChickenManagementPage extends StatefulWidget {
 }
 
 class _ChickenManagementPageState extends State<ChickenManagementPage> {
-  int chickenAdded = 0; // Default value for number of chickens added
-  double chickenRate = 200.0; // Default rate of chicken
-  double averageRate = 200.0; // Example average rate
-  List<Map<String, dynamic>> feedList = []; // List to store feed details
-  String selectedFood = 'Maize'; // Default food selection
-  double foodRate = 10.0; // Default food rate
-  double foodUnits = 0.0; // Default units purchased (kg)
-  double totalFoodCost = 0.0; // Default total food cost
-  int deadChickens = 0; // Default number of dead chickens
+  int chickenAdded = 0;
+  double chickenRate = 200.0;
+  double averageRate = 200.0;
+  List<Map<String, dynamic>> feedList = [];
+  String selectedFood = 'Maize';
+  double foodRate = 10.0;
+  double foodUnits = 0.0;
+  double totalFoodCost = 0.0;
+  int deadChickens = 0;
   double totalCost = 0.0;
-  double sellRate = 250.0; // Example sell rate
-  int chickensSold = 5; // Example number of chickens sold
+  double sellRate = 250.0;
+  int chickensSold = 18;
 
   final List<String> foodItems = [
     'Maize',
@@ -41,7 +41,6 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Financial Section
             Text(
               'Financial',
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -54,44 +53,80 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('No. of Chicken Added:',
+                Text('No. of Chicken Added: ',
                     style: Theme.of(context).textTheme.bodyLarge),
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        chickenAdded = int.tryParse(value) ?? 0;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter...',
-                      border: OutlineInputBorder(),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 12),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            chickenAdded = int.tryParse(value) ?? 0;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter...',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          chickenAdded++;
+                        });
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
                 ),
               ],
             ),
             const SizedBox(height: 8),
             // Rate of Chicken
-            Text('Rate of Chicken:',
-                style: Theme.of(context).textTheme.bodyLarge),
-            TextField(
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                setState(() {
-                  chickenRate = double.tryParse(value) ?? 0.0;
-                  averageRate = (chickenRate * chickenAdded) / chickenAdded;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Enter rate',
-                border: OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Rate of Chicken:',
+                    style: Theme.of(context).textTheme.bodyLarge),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            chickenRate = double.tryParse(value) ?? 0.0;
+                            averageRate = (chickenRate * chickenAdded) /
+                                (chickenAdded > 0 ? chickenAdded : 1);
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter rate',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          chickenRate++;
+                        });
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             // Average Rate
@@ -105,7 +140,6 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
 
             const SizedBox(height: 30),
 
-            // Feed Spent Section
             Text(
               'Feed Spent',
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -114,14 +148,12 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
                   ),
             ),
             const SizedBox(height: 16),
-            // Dropdown for Food Selection
             Text('Select Food:', style: Theme.of(context).textTheme.bodyLarge),
             DropdownButton<String>(
               value: selectedFood,
               onChanged: (String? newValue) {
                 setState(() {
                   selectedFood = newValue!;
-                  // Update the rate based on the selected food
                   foodRate = _getFoodRate(selectedFood);
                   totalFoodCost = foodRate * foodUnits;
                 });
@@ -134,8 +166,6 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
               }).toList(),
             ),
             const SizedBox(height: 8),
-
-            // Row to equally divide the space for "Units Purchased" and "Rate per kg"
             Row(
               children: [
                 Expanded(
@@ -190,7 +220,6 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
               ],
             ),
             const SizedBox(height: 8),
-            // Display Total Food Cost
             Text(
               'Total Food Cost: Rs.${totalFoodCost.toStringAsFixed(2)}',
               style: Theme.of(context)
@@ -201,68 +230,107 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
 
             const SizedBox(height: 30),
 
-            // Dead Chickens Field on the same Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Dead Chickens:',
                     style: Theme.of(context).textTheme.bodyLarge),
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        deadChickens = int.tryParse(value) ?? 0;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter...',
-                      border: OutlineInputBorder(),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 12),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            deadChickens = int.tryParse(value) ?? 0;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter...',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          deadChickens++;
+                        });
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'No. of Chicken Sold:',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            chickensSold = int.tryParse(value) ?? 0;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter...',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          chickensSold++;
+                        });
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
                 ),
               ],
             ),
 
             const SizedBox(height: 30),
 
-            // Total Cost Section
             Text(
               'Total Cost: Rs.${(totalFoodCost + (chickenRate * chickenAdded)).toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Colors.red,
-                    fontSize: 18,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                   ),
             ),
 
             const SizedBox(height: 16),
 
-            // Sell Rate Section
             Text(
               'Sell Rate: Rs.${sellRate.toStringAsFixed(2)}',
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!
-                  .copyWith(fontSize: 18),
+                  .copyWith(fontSize: 22, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 8),
 
-            // No. of Chicken Sold
-            Text(
-              'No. of Chicken Sold: $chickensSold',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(fontSize: 18),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Profit and Loss Section
             Text(
               'Profit and Loss: Rs.${(sellRate * chickensSold - (totalFoodCost + (chickenRate * chickenAdded))).toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -272,7 +340,8 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
                             0
                         ? Colors.green
                         : Colors.red,
-                    fontSize: 18,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                   ),
             ),
           ],
@@ -281,7 +350,6 @@ class _ChickenManagementPageState extends State<ChickenManagementPage> {
     );
   }
 
-  // Helper function to get the rate for the selected food
   double _getFoodRate(String food) {
     switch (food) {
       case 'Maize':
