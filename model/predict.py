@@ -3,7 +3,7 @@ import sys
 import pickle
 import joblib
 import requests
-import sklearn
+import json
 
 # Function to load vectorizer
 def load_vectorizer(vectorizer_path):
@@ -21,25 +21,24 @@ def load_model(model_path):
 def predict(vectorizer, model, text):
     text_transformed = vectorizer.transform([text])
     prediction = model.predict(text_transformed)
-    return prediction[0]
+    return int(prediction[0])  # Ensure integer output
 
 # Function to fetch news titles from API
 def fetch_news_titles(api_url):
     response = requests.get(api_url)
-    titles = []
-    urls = []
+    news_data = []
     if response.status_code == 200:
         data = response.json()
         if 'results' in data:
             for source in data['results']:
                 description = source.get('description', 'No description available')
                 url = source.get('url', 'No URL available')
-                titles.append((description, url))
+                news_data.append({'description': description, 'url': url})
         else:
             print("No sources found in the response.")
     else:
         print("Failed to fetch data, status code:", response.status_code)
-    return titles
+    return news_data
 
 if __name__ == "__main__":
     # Define the base directory
@@ -58,10 +57,20 @@ if __name__ == "__main__":
 
     # Fetch news titles
     news_data = fetch_news_titles(api_url)
-    news_data.append(("Further bird flu cases confirmed at farm", "https://www.bbc.com/news/articles/cwyxj2ke3n9o"))
+    news_data.append({"description": "Further bird flu cases confirmed at farm", 
+                      "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
 
     # Predict for each news title
-    for title, url in news_data:
-        prediction = predict(vectorizer, model, title)
-        print(f"Title: {title}\nURL: {url}\nPrediction: {1 if prediction == 1 else 0}\n")
- 
+    output = []
+    for item in news_data:
+        description = item['description']
+        url = item['url']
+        prediction = predict(vectorizer, model, description) if description != 'No description available' else None
+        output.append({"title": description, "url": url, "prediction": prediction})
+
+    # Save to a JSON file
+    output_path = os.path.join(base_dir, 'news_predictions.json')
+    with open(output_path, 'w') as json_file:
+        json.dump(output, json_file, indent=4)
+
+    print(f"Data saved to {output_path}")
