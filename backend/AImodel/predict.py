@@ -4,10 +4,6 @@ import pickle
 import joblib
 import requests
 import json
-from flask import Flask, jsonify
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Function to load vectorizer
 def load_vectorizer(vectorizer_path):
@@ -44,11 +40,9 @@ def fetch_news_titles(api_url):
         print("Failed to fetch data, status code:", response.status_code)
     return news_data
 
-# Define a route to serve the news predictions
-@app.route('/predict_news', methods=['GET'])
-def predict_news():
+if _name_ == "_main_":
     # Define the base directory
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.abspath(_file_))
 
     # Update the paths to be absolute
     vectorizer_path = os.path.join(base_dir, 'count_vectorizer.pkl')
@@ -65,6 +59,10 @@ def predict_news():
     news_data = fetch_news_titles(api_url)
     news_data.append({"description": "Further bird flu cases confirmed at farm", 
                       "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
+    news_data.append({
+    "description": "10 Chicken Breeds for Your Farm", 
+    "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"
+})
 
     # Predict for each news title
     output = []
@@ -74,8 +72,9 @@ def predict_news():
         prediction = predict(vectorizer, model, description) if description != 'No description available' else None
         output.append({"title": description, "url": url, "prediction": prediction})
 
-    # Return the output as JSON response
-    return jsonify(output)
+    # Save to a JSON file
+    output_path = os.path.join(base_dir, 'news_predictions.json')
+    with open(output_path, 'w') as json_file:
+        json.dump(output, json_file, indent=4)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    print(f"Data saved to {output_path}")
