@@ -1,26 +1,41 @@
 import mongoose from "mongoose";
 
+// Schema for tracking feed information
 const feedSchema = new mongoose.Schema({
-    company: { type: String, required: true },        // Company that provided the feed
-    grainType: { type: String, required: true },      // Type of grain (e.g., corn, wheat)
-    weight: { type: Number, required: true },         // Weight of the feed (in kg)
-    price: { type: Number, required: true },          // Price of the feed (in currency)
-    date: { type: Date, default: Date.now }           // Date the feed was provided
-}, { _id: false });  // Disable creating a new _id for each feed record.
+    company: { type: String, required: true },
+    grainType: { type: String, required: true },
+    weight: { type: Number, required: true },
+    price: { type: Number, required: true },
+    date: { type: Date, default: Date.now }
+}, { _id: false });
 
+// Schema for tracking sale details
+const saleSchema = new mongoose.Schema({
+    soldCount: { type: Number, required: true },   // Number of chickens sold in this sale
+    soldPrice: { type: Number, required: true },   // Price at which chickens were sold
+    soldDate: { type: Date, default: Date.now },   // Date of the sale
+}, { _id: false });
+
+// Schema for tracking mortality details
+const mortalitySchema = new mongoose.Schema({
+    mortalityCount: { type: Number, required: true },  // Number of chickens that died
+    mortalityDate: { type: Date, default: Date.now },  // Date of mortality
+    reason: { type: String, required: true },          // Reason for mortality (e.g., disease, age, accident)
+}, { _id: false });
+
+// Schema for chicken details
 const chickenSchema = new mongoose.Schema({
     userId: { type: String, required: true },
     type: { type: String, required: true },
     numberPurchased: { type: Number, required: true },
     purchasePrice: { type: Number, required: true },
     growthStartDate: { type: Date, default: Date.now },
-    soldCount: { type: Number, default: 0 },
-    mortalityCount: { type: Number, default: 0 },
-    supplier: {
-        type: String,
-        required: true,
-    },
-    feedDetails: [feedSchema], // New field to track feed information for the chickens
+    soldCount: { type: Number, default: 0 },         // Total number of chickens sold
+    mortalityCount: { type: Number, default: 0 },     // Total number of chickens that died
+    supplier: { type: String},
+    feedDetails: [feedSchema],    // Information about the feed for the chickens
+    soldDetails: [saleSchema],    // Track individual sales of chickens
+    mortalityDetails: [mortalitySchema]  // Track individual mortality events
 });
 
 export default mongoose.model("Chicken", chickenSchema);
