@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:async';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:kukhurikaa/components/circular_progress.dart';
 import 'package:kukhurikaa/components/control_card.dart';
@@ -14,7 +17,53 @@ class DashboardContent extends StatefulWidget {
 
 class _DashboardContentState extends State<DashboardContent> {
   bool isTemperatureControlOn = false;
-  bool isHumidityControlOn = false; // Default humidity value
+  bool isHumidityControlOn = false;
+  double temperature = 0.0;
+  double humidity = 0.0;
+  final DatabaseReference _databaseReference =
+      FirebaseDatabase.instance.ref('test'); // Reference to "test" node
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start a timer to fetch data every 1 second
+    _timer = Timer.periodic(Duration(seconds: 1), _fetchData);
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
+  void _fetchData(Timer timer) async {
+    try {
+      // Fetch the data from Firebase Realtime Database
+      DataSnapshot snapshot = await _databaseReference.get();
+      if (snapshot.exists) {
+        var data = snapshot.value as Map;
+        setState(() {
+          // Update the state with the new values
+          temperature = (data['temp'] is int
+                  ? (data['temp'] as int).toDouble()
+                  : data['temp']) ??
+              0.0;
+          humidity = (data['humidity'] is int
+                  ? (data['humidity'] as int).toDouble()
+                  : data['humidity']) ??
+              0.0;
+        });
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  double updateProgress(double value) {
+    // Limit to 2 decimal places
+    return double.parse(value.toStringAsFixed(2));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +80,8 @@ class _DashboardContentState extends State<DashboardContent> {
               children: [
                 CircularProgress(
                   title: "Temperature",
-                  progress: controlProvider.temperature,
-                  unit: "°C",
+                  progress: temperature,
+                  unit: '°C',
                   foregroundColor: Colors.red,
                 ),
                 SizedBox(
@@ -40,7 +89,7 @@ class _DashboardContentState extends State<DashboardContent> {
                 ),
                 CircularProgress(
                   title: "Humidity",
-                  progress: controlProvider.humidity,
+                  progress: humidity,
                   unit: '%',
                   foregroundColor: Colors.blue,
                 ),

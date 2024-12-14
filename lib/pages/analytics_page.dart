@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:kukhurikaa/providers/control_provider.dart';
+import 'package:kukhurikaa/providers/sensor_data_provider.dart'; // Import SensorDataProvider
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -13,40 +13,41 @@ class AnalyticsPage extends StatefulWidget {
 
 class _AnalyticsPageState extends State<AnalyticsPage> {
   Timer? _timer;
+  List<double> temperatureData = [];
+  List<double> humidityData = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Start a Timer to update the graph every second
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      final controlProvider =
-          Provider.of<ControlProvider>(context, listen: false);
+      final sensorDataProvider =
+          Provider.of<SensorDataProvider>(context, listen: false);
 
-      // Add current temperature and humidity to their respective data lists
-      controlProvider.addTemperatureData(controlProvider.temperature);
-      controlProvider.addTemperatureData(controlProvider.temperature);
-      if (controlProvider.temperatureData.length > 100) {
-        controlProvider.temperatureData.removeAt(0);
+      // Add the current temperature and humidity to the data lists
+      temperatureData.add(sensorDataProvider.temperature);
+      humidityData.add(sensorDataProvider.humidity);
+
+      // Keep data list limited to 100 items for performance
+      if (temperatureData.length > 100) {
+        temperatureData.removeAt(0);
       }
-      controlProvider.addHumidityData(controlProvider.humidity);
-      controlProvider.addHumidityData(controlProvider.humidity);
-      if (controlProvider.humidityData.length > 100) {
-        controlProvider.humidityData.removeAt(0);
+      if (humidityData.length > 100) {
+        humidityData.removeAt(0);
       }
+
+      setState(() {}); // Trigger a rebuild to update the chart
     });
   }
 
   @override
   void dispose() {
-    // Cancel the timer when the widget is disposed
     _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final controlProvider = Provider.of<ControlProvider>(context);
+    final sensorDataProvider = Provider.of<SensorDataProvider>(context);
 
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
@@ -66,10 +67,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: List.generate(
-                        controlProvider.temperatureData.length,
+                        temperatureData.length,
                         (index) => FlSpot(
                           index.toDouble(),
-                          controlProvider.temperatureData[index],
+                          temperatureData[index],
                         ),
                       ),
                       isCurved: true,
@@ -98,10 +99,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: List.generate(
-                        controlProvider.humidityData.length,
+                        humidityData.length,
                         (index) => FlSpot(
                           index.toDouble(),
-                          controlProvider.humidityData[index],
+                          humidityData[index],
                         ),
                       ),
                       isCurved: true,

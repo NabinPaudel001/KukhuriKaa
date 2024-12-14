@@ -3,23 +3,26 @@ import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 
 class CircularProgress extends StatelessWidget {
   final String title;
-  final double progress;
+  final double progress; // Ensure progress is a double type
   final Color foregroundColor;
   final Color backgroundColor;
   final String unit;
   CircularProgress({
     super.key,
     required this.title,
-    required this.progress,
     required this.foregroundColor,
     this.backgroundColor = const Color.fromARGB(255, 238, 231, 231),
     required this.unit,
+    required this.progress,
   });
 
-  final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
+  final ValueNotifier<double> _valueNotifier = ValueNotifier(0.0);
 
   @override
   Widget build(BuildContext context) {
+    // Update the value notifier whenever progress changes
+    _valueNotifier.value = progress;
+
     return DashedCircularProgressBar(
       width: 175,
       height: 200,
@@ -42,7 +45,7 @@ class CircularProgress extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${value.toInt()}${unit}',
+                      '${value.toStringAsFixed(1)}${unit}', // Display value with one decimal point
                       style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w800,
