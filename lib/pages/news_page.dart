@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
@@ -9,61 +9,68 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  late Future<List<dynamic>> newsData;
-
-  // Function to load the JSON file from assets
-  Future<List<dynamic>> loadJsonData() async {
-    final String jsonString = await rootBundle.loadString('assets/data.json');
-    final List<dynamic> jsonData = jsonDecode(jsonString);
-
-    // Filter the data (e.g., only include items where 'prediction' is 1)
-    return jsonData.where((item) => item['prediction'] == 1).toList();
-  }
+  List<Map<String, dynamic>> newsData = [];
 
   @override
   void initState() {
     super.initState();
-    newsData = loadJsonData(); // Load JSON data when the widget is initialized
+    loadNewsData();
   }
 
-  // Function to launch a URL in a browser
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+  // Load the JSON data from the file
+  Future<void> loadNewsData() async {
+    final String jsonString =
+        await rootBundle.loadString('model/news_predictions.json');
+    final List<dynamic> jsonData = json.decode(jsonString);
+    // Filter news where prediction == 1
+    setState(() {
+      newsData = jsonData
+          .where((item) => item['prediction'] == 1)
+          .map((item) => {
+                "title": item['title'],
+                "url": item['url'],
+              })
+          .toList();
+    });
+  }
+
+  // Open URL in the browser
+  void openUrl(String url) async {
+    final Uri uri = Uri.parse(url); // Convert the URL string to a Uri object
+
+    try {
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        // If launchUrl fails, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open the link: $url')),
+        );
+      }
+    } catch (e) {
+      // Handle any errors
+      debugPrint('Error launching URL: $url, Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: newsData,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-          return Center(child: Text('No news to display.'));
-        }
-
-        final news = snapshot.data!;
-        return ListView.builder(
-          itemCount: news.length,
-          itemBuilder: (context, index) {
-            final item = news[index];
-            return Card(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: ListTile(
-                title: Text(item['title']),
-                subtitle: Text(item['source'] ?? 'No source available'),
-                onTap: () => _launchURL(item['url']), // Open URL on tap
-              ),
-            );
-          },
-        );
-      },
-    );
+    return newsData.isEmpty
+        ? Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            itemCount: newsData.length,
+            itemBuilder: (context, index) {
+              final newsItem = newsData[index];
+              return Card(
+                margin: EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Text(newsItem['title']),
+                  trailing: Icon(Icons.open_in_new),
+                  onTap: () => openUrl(newsItem['url']),
+                ),
+              );
+            },
+          );
   }
 }
