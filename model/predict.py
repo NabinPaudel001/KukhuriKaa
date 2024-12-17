@@ -75,3 +75,4 @@ if __name__ == "__main__":
     # Print filtered results
     for result in output:
         print(f"Title: {result['title']}\nURL: {result['url']}\n")
+
