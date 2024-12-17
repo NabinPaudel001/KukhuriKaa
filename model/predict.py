@@ -3,7 +3,6 @@ import sys
 import pickle
 import joblib
 import requests
-import json
 
 # Function to load vectorizer
 def load_vectorizer(vectorizer_path):
@@ -59,6 +58,10 @@ if __name__ == "__main__":
     news_data = fetch_news_titles(api_url)
     news_data.append({"description": "Further bird flu cases confirmed at farm", 
                       "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
+    news_data.append({"description": "10 Chicken Breeds for Your Farm", 
+                      "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"})
+    news_data.append({"description": "Avian flu is killing chickens at Pasco-area poultry operation. More being euthanized", 
+                      "url": "https://www.tri-cityherald.com/news/business/agriculture/article294069399.html"})
 
     # Predict for each news title
     output = []
@@ -66,11 +69,9 @@ if __name__ == "__main__":
         description = item['description']
         url = item['url']
         prediction = predict(vectorizer, model, description) if description != 'No description available' else None
-        output.append({"title": description, "url": url, "prediction": prediction})
+        if prediction == 1:  # Include only items with prediction = 1
+            output.append({"title": description, "url": url})
 
-    # Save to a JSON file
-    output_path = os.path.join(base_dir, 'news_predictions.json')
-    with open(output_path, 'w') as json_file:
-        json.dump(output, json_file, indent=4)
-
-    print(f"Data saved to {output_path}")
+    # Print filtered results
+    for result in output:
+        print(f"Title: {result['title']}\nURL: {result['url']}\n")
