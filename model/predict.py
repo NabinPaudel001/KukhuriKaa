@@ -1,5 +1,4 @@
 import os
-import sys
 import pickle
 import joblib
 import requests
@@ -56,23 +55,23 @@ if __name__ == "__main__":
 
     # Fetch news titles
     news_data = fetch_news_titles(api_url)
-    news_data.append({"description": "Further bird flu cases confirmed at farm", 
-                      "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
-    news_data.append({"description": "10 Chicken Breeds for Your Farm", 
-                      "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"})
-    news_data.append({"description": "Avian flu is killing chickens at Pasco-area poultry operation. More being euthanized", 
-                      "url": "https://www.tri-cityherald.com/news/business/agriculture/article294069399.html"})
+    news_data.extend([
+        {"description": "Further bird flu cases confirmed at farm", 
+         "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"},
+        {"description": "10 Chicken Breeds for Your Farm", 
+         "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"},
+        {"description": "Avian flu is killing chickens at Pasco-area poultry operation. More being euthanized", 
+         "url": "https://www.tri-cityherald.com/news/business/agriculture/article294069399.html"}
+    ])
 
     # Predict for each news title
-    output = []
+    filtered_results = []
     for item in news_data:
         description = item['description']
         url = item['url']
         prediction = predict(vectorizer, model, description) if description != 'No description available' else None
         if prediction == 1:  # Include only items with prediction = 1
-            output.append({"title": description, "url": url})
+            filtered_results.append({"title": description, "url": url})
 
     # Print filtered results
-    for result in output:
-        print(f"Title: {result['title']}\nURL: {result['url']}\n")
-
+    print(filtered_results)
