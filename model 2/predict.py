@@ -3,11 +3,6 @@ import sys
 import pickle
 import joblib
 import requests
-import json
-from flask import Flask, jsonify
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Function to load vectorizer
 def load_vectorizer(vectorizer_path):
@@ -44,9 +39,7 @@ def fetch_news_titles(api_url):
         print("Failed to fetch data, status code:", response.status_code)
     return news_data
 
-# Define a route to serve the news predictions
-@app.route('/predict_news', methods=['GET'])
-def predict_news():
+if __name__ == "__main__":
     # Define the base directory
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -65,6 +58,10 @@ def predict_news():
     news_data = fetch_news_titles(api_url)
     news_data.append({"description": "Further bird flu cases confirmed at farm", 
                       "url": "https://www.bbc.com/news/articles/cwyxj2ke3n9o"})
+    news_data.append({"description": "10 Chicken Breeds for Your Farm", 
+                      "url": "https://www.agriculture.com/livestock/poultry/10-chicken-breeds-for-your-farm"})
+    news_data.append({"description": "Avian flu is killing chickens at Pasco-area poultry operation. More being euthanized", 
+                      "url": "https://www.tri-cityherald.com/news/business/agriculture/article294069399.html"})
 
     # Predict for each news title
     output = []
@@ -72,10 +69,9 @@ def predict_news():
         description = item['description']
         url = item['url']
         prediction = predict(vectorizer, model, description) if description != 'No description available' else None
-        output.append({"title": description, "url": url, "prediction": prediction})
+        if prediction == 1:  # Include only items with prediction = 1
+            output.append({"title": description, "url": url})
 
-    # Return the output as JSON response
-    return jsonify(output)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # Print filtered results
+    for result in output:
+        print(f"Title: {result['title']}\nURL: {result['url']}\n")

@@ -24,8 +24,8 @@ class CircularProgress extends StatelessWidget {
     _valueNotifier.value = progress;
 
     return DashedCircularProgressBar(
-      width: 175,
-      height: 200,
+      width: 375,
+      height: 220,
       // width ÷ height
       valueNotifier: _valueNotifier,
       progress: progress,

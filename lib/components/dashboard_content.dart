@@ -16,6 +16,9 @@ class DashboardContent extends StatefulWidget {
 }
 
 class _DashboardContentState extends State<DashboardContent> {
+  List<Map<String, String>> alerts = [];
+  String? alertTitle;
+  String? alertMessage;
   bool isTemperatureControlOn = false;
   bool isHumidityControlOn = false;
   double temperature = 0.0;
@@ -53,6 +56,9 @@ class _DashboardContentState extends State<DashboardContent> {
                   ? (data['humidity'] as int).toDouble()
                   : data['humidity']) ??
               0.0;
+
+          // Handle the alerts based on the temperature and humidity
+          checkAlerts(temperature, humidity);
         });
       }
     } catch (e) {
@@ -65,6 +71,51 @@ class _DashboardContentState extends State<DashboardContent> {
     return double.parse(value.toStringAsFixed(2));
   }
 
+  void checkAlerts(double temperature, double humidity) {
+    // Clear previous alerts
+    alerts.clear();
+
+    if (temperature < 30) {
+      alerts.add({
+        'title': 'Temperature too low',
+        'message': 'Light turned on.',
+      });
+    } else if (temperature > 33) {
+      alerts.add({
+        'title': 'Temperature too high',
+        'message': 'Fan turned on.',
+      });
+    }
+
+    if (humidity < 60) {
+      alerts.add({
+        'title': 'Humidity too low',
+        'message': 'Cooling fan turned on.',
+      });
+    } else if (humidity > 70) {
+      alerts.add({
+        'title': 'Humidity too high',
+        'message': 'LED bulb turned on.',
+      });
+    }
+  }
+
+  void showAlert(String title, String message) {
+    // Show the alert with the appropriate title and message
+    setState(() {
+      alertTitle = title;
+      alertMessage = message;
+    });
+  }
+
+  void removeAlert() {
+    // Remove the alert message when the values are within the normal range
+    setState(() {
+      alertTitle = null;
+      alertMessage = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final controlProvider = Provider.of<ControlProvider>(context);
@@ -73,9 +124,9 @@ class _DashboardContentState extends State<DashboardContent> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CircularProgress(
@@ -95,90 +146,28 @@ class _DashboardContentState extends State<DashboardContent> {
                 ),
               ],
             ),
-            // Row for temperature and humidity control
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Control",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
-                  ),
-                ),
-                Row(
-                  spacing: 16,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     ElevatedButton(
-                  //       onPressed: () {
-                  //         controlProvider.incrementTemperature();
-                  //       },
-                  //       child: Text('+ Temp'),
-                  //     ),
-                  //     SizedBox(width: 10),
-                  //     ElevatedButton(
-                  //       onPressed: () {
-                  //         controlProvider.decrementTemperature();
-                  //       },
-                  //       child: Text('- Temp'),
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: 16),
-                  // // Debug Buttons for Humidity
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     ElevatedButton(
-                  //       onPressed: () {
-                  //         controlProvider.incrementHumidity();
-                  //       },
-                  //       child: Text('+ Humidity'),
-                  //     ),
-                  //     SizedBox(width: 10),
-                  //     ElevatedButton(
-                  //       onPressed: () {
-                  //         controlProvider.decrementHumidity();
-                  //       },
-                  //       child: Text('- Humidity'),
-                  //     ),
-                  //   ],
-                  children: [
-                    ControlCard(
-                      title: "Temperature",
-                      initialState: isTemperatureControlOn,
-                      onToggle: (value) {
-                        Provider.of<ControlState>(context, listen: false)
-                            .toggleTemperatureControl(value);
-                        // Additional logic for enabling/disabling temperature control
-                      },
-                    ),
-                    ControlCard(
-                      title: "Humidity",
-                      initialState: isHumidityControlOn,
-                      onToggle: (value) {
-                        Provider.of<ControlState>(context, listen: false)
-                            .toggleHumidityControl(value);
-                        // Additional logic for enabling/disabling humidity control
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+
             // Example list of items (can be a list of recent alerts, logs, etc.)
-            ListTile(
-              leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: High Temperature'),
-              subtitle: Text('The temperature has exceeded the safe limit!'),
-            ),
-            ListTile(
-              leading: Icon(Icons.warning, color: Colors.red),
-              title: Text('Alert: Low Humidity'),
-              subtitle: Text('The humidity is below the recommended level!'),
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.warning, color: Colors.red),
+            //   title: Text('Alert: High Temperature'),
+            //   subtitle: Text('The temperature has exceeded the safe limit!'),
+            // ),
+            // ListView.builder to display multiple alerts
+            if (alerts.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true, // To avoid overflow issues
+                physics: NeverScrollableScrollPhysics(), // Disable scrolling
+                itemCount: alerts.length,
+                itemBuilder: (context, index) {
+                  final alert = alerts[index];
+                  return ListTile(
+                    leading: Icon(Icons.warning, color: Colors.red),
+                    title: Text(alert['title']!),
+                    subtitle: Text(alert['message']!),
+                  );
+                },
+              ),
           ],
         ),
       ),
