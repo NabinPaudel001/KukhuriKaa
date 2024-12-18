@@ -1,5 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:kukhurikaa/components/auth/login_service.dart';
 import 'package:kukhurikaa/pages/dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,29 +16,68 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false; // Track loading state
 
-  signIn() async {
+  void _submitform() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    // ----------------------------------------------------------------
+    // SHOW LOADING ANIMATION
+    // ----------------------------------------------------------------
     setState(() {
       _isLoading = true; // Start loading
     });
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
+
+    // Instantiate the NetworkService
+    final networkService = LoginService();
+
+    // Call the register function and get the result
+    final result = await networkService.loginUser(email, password);
+
+    // Handle the result (check if registration is successful)
+    if (result['success']) {
+      print("Login successful: ${result['message']}");
+      print('Access Token: ${result['data']['accessToken']}');
       // Navigate to the home screen or next page
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => DashboardPage()),
         (route) => false,
-      ); // This ensures all previous routes are removed);
-    } on FirebaseAuthException catch (e) {
+      ); // This ensures all previous routes are removed); // Replace with your home screen
+      // Now extract the data, e.g., accessToken
+    } else {
+      // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.message ?? 'An error occurred'),
+        content: Text("Registration failed: ${result['message']}"),
       ));
-    } finally {
       setState(() {
         _isLoading = false; // Stop loading
       });
     }
   }
+
+  // signIn() async {
+  //   setState(() {
+  //     _isLoading = true; // Start loading
+  //   });
+  //   try {
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: _emailController.text, password: _passwordController.text);
+  //     // Navigate to the home screen or next page
+  //     Navigator.pushAndRemoveUntil(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => DashboardPage()),
+  //       (route) => false,
+  //     ); // This ensures all previous routes are removed);
+  //   } on FirebaseAuthException catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text(e.message ?? 'An error occurred'),
+  //     ));
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false; // Stop loading
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Text(
-                  'Chicken Monitoring App',
+                  'Smart Poultry Monitoring System',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w300,
@@ -127,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         child:
                             CircularProgressIndicator()) // Show loader when logging in
                     : ElevatedButton(
-                        onPressed: signIn,
+                        onPressed: _submitform,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                           child: Text(
