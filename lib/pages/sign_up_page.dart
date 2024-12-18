@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kukhurikaa/components/auth/register_service.dart';
 import 'package:kukhurikaa/pages/dashboard_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -11,48 +12,114 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   // final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
 
-  void _signUp() async {
+  void _submitForm() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    // ----------------------------------------------------------------
+    // SHOW LOADING ANIMATION
+    // ----------------------------------------------------------------
     setState(() {
       _isLoading = true; // Start loading
     });
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Passwords do not match!'),
-        ),
-      );
-      return;
-    }
+    // Instantiate the NetworkService
+    final networkService = RegisterService();
 
-    try {
-      // Register the user using email and password
-      await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text, // Use email provided by the user
-        password: _passwordController.text,
-      );
+    // Call the register function and get the result
+    final result = await networkService.registerUser(email, password);
+
+    // Handle the result (check if registration is successful)
+    if (result['success']) {
+      print("Registration successful: ${result['message']}");
       // Navigate to the home screen or next page
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => DashboardPage()),
         (route) => false,
       ); // This ensures all previous routes are removed); // Replace with your home screen
-    } on FirebaseAuthException catch (e) {
+      // Now extract the data, e.g., accessToken
+      print('Access Token: ${result['data']['accessToken']}');
+    } else {
       // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.message ?? 'An error occurred'),
+        content: Text("Registration failed: ${result['message']}"),
       ));
-    } finally {
       setState(() {
         _isLoading = false; // Stop loading
       });
     }
   }
+  // void _signUp() async {
+  //   // ----------------------------------------------------------------
+  //   // SHOW LOADING ANIMATION
+  //   // ----------------------------------------------------------------
+  //   setState(() {
+  //     _isLoading = true; // Start loading
+  //   });
+
+  //   // ----------------------------------------------------------------
+  //   // CHECK PASSWORD AND CONFIRM PASSWORD
+  //   // ----------------------------------------------------------------
+  //   if (_passwordController.text != _confirmPasswordController.text) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Passwords do not match!'),
+  //       ),
+  //     );
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     return;
+  //   }
+  //   try {
+  //     registerUser(_emailController.text, _passwordController.text);
+  //     // Navigate to the home screen or next page
+  //     Navigator.pushAndRemoveUntil(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => DashboardPage()),
+  //       (route) => false,
+  //     ); // This ensures all previous routes are removed); // Replace with your home screen
+  //   } catch (e) {
+  //     // Handle errors
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text(e.toString()),
+  //     ));
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false; // Stop loading
+  //     });
+  //   }
+
+  // try {
+  //   // Register the user using email and password
+  //   await _auth.createUserWithEmailAndPassword(
+  //     email: _emailController.text, // Use email provided by the user
+  //     password: _passwordController.text,
+  //   );
+  //   // Navigate to the home screen or next page
+  //   Navigator.pushAndRemoveUntil(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => DashboardPage()),
+  //     (route) => false,
+  //   ); // This ensures all previous routes are removed); // Replace with your home screen
+  // } on FirebaseAuthException catch (e) {
+  //   // Handle errors
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //     content: Text(e.message ?? 'An error occurred'),
+  //   ));
+  // } finally {
+  //   setState(() {
+  //     _isLoading = false; // Stop loading
+  //   });
+  // }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 Text(
-                  'Chicken Monitoring App',
+                  'Smart Poultry Monitoring System',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w300,
@@ -178,7 +245,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child:
                             CircularProgressIndicator()) // Show loader when logging in
                     : ElevatedButton(
-                        onPressed: _signUp,
+                        onPressed: _submitForm,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                           child: Text(
