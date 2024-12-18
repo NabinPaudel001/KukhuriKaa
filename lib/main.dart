@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kukhurikaa/pages/dashboard_page.dart';
-import 'package:kukhurikaa/pages/login_page.dart';
 import 'package:kukhurikaa/pages/sign_up_page.dart';
 import 'package:kukhurikaa/pages/wrapper.dart';
 import 'package:kukhurikaa/providers/control_provider.dart';
@@ -34,6 +33,21 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: ThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(width: 2),
+          ),
+        ),
         brightness: Brightness.light,
         useMaterial3: true,
         colorScheme:

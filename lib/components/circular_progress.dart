@@ -45,7 +45,7 @@ class CircularProgress extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${value.toStringAsFixed(1)}${unit}', // Display value with one decimal point
+                      '${value.toStringAsFixed(1)}$unit', // Display value with one decimal point
                       style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w800,

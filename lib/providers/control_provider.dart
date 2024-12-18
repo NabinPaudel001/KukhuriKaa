@@ -7,8 +7,8 @@ class ControlProvider with ChangeNotifier {
   double get temperature => _temperature;
   double get humidity => _humidity;
 
-  List<double> _temperatureData = [];
-  List<double> _humidityData = [];
+  final List<double> _temperatureData = [];
+  final List<double> _humidityData = [];
 
   List<double> get temperatureData => _temperatureData;
   List<double> get humidityData => _humidityData;

@@ -1,11 +1,8 @@
-import 'dart:ffi';
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:kukhurikaa/components/circular_progress.dart';
-import 'package:kukhurikaa/components/control_card.dart';
 import 'package:kukhurikaa/providers/control_provider.dart';
-import 'package:kukhurikaa/providers/control_state.dart';
 import 'package:provider/provider.dart';
 
 class DashboardContent extends StatefulWidget {
