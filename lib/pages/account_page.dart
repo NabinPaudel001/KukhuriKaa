@@ -13,9 +13,11 @@ class _AccountPageState extends State<AccountPage> {
   bool _notificationsEnabled = true;
   final user = FirebaseAuth.instance.currentUser;
   // For password change
-  TextEditingController _currentPasswordController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _passwordChanged = false;
   @override
   Widget build(BuildContext context) {
