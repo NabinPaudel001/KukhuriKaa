@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:kukhurikaa/components/circular_progress.dart';
+import 'package:kukhurikaa/components/notification_service.dart';
 import 'package:kukhurikaa/providers/control_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,7 @@ class DashboardContent extends StatefulWidget {
 }
 
 class _DashboardContentState extends State<DashboardContent> {
-  List<Map<String, String>> alerts = [];
+  List<Map<String, String>> alerts = []; // List to hold multiple alerts
   String? alertTitle;
   String? alertMessage;
   bool isTemperatureControlOn = false;
@@ -23,6 +24,9 @@ class _DashboardContentState extends State<DashboardContent> {
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.ref('test'); // Reference to "test" node
   late Timer _timer;
+
+  // List to track the titles of alerts that have already been notified
+  List<String> notifiedAlerts = [];
 
   @override
   void initState() {
@@ -68,49 +72,47 @@ class _DashboardContentState extends State<DashboardContent> {
     return double.parse(value.toStringAsFixed(2));
   }
 
+  // Function to check temperature and humidity and trigger alerts/notifications
   void checkAlerts(double temperature, double humidity) {
-    // Clear previous alerts
-    alerts.clear();
-
-    if (temperature < 30) {
+    // Check temperature alerts
+    if (temperature < 30 && !notifiedAlerts.contains('Temperature too low')) {
       alerts.add({
         'title': 'Temperature too low',
         'message': 'Light turned on.',
       });
-    } else if (temperature > 33) {
+      // Show notification for low temperature
+      showNotification(title: 'Temperature too low', body: 'Light turned on.');
+      notifiedAlerts.add('Temperature too low'); // Add to notified list
+    } else if (temperature > 33 &&
+        !notifiedAlerts.contains('Temperature too high')) {
       alerts.add({
         'title': 'Temperature too high',
         'message': 'Fan turned on.',
       });
+      // Show notification for high temperature
+      showNotification(title: 'Temperature too high', body: 'Fan turned on.');
+      notifiedAlerts.add('Temperature too high'); // Add to notified list
     }
 
-    if (humidity < 60) {
+    // Check humidity alerts
+    if (humidity < 60 && !notifiedAlerts.contains('Humidity too low')) {
       alerts.add({
         'title': 'Humidity too low',
         'message': 'Cooling fan turned on.',
       });
-    } else if (humidity > 70) {
+      // Show notification for low humidity
+      showNotification(
+          title: 'Humidity too low', body: 'Cooling fan turned on.');
+      notifiedAlerts.add('Humidity too low'); // Add to notified list
+    } else if (humidity > 70 && !notifiedAlerts.contains('Humidity too high')) {
       alerts.add({
         'title': 'Humidity too high',
         'message': 'LED bulb turned on.',
       });
+      // Show notification for high humidity
+      showNotification(title: 'Humidity too high', body: 'LED bulb turned on.');
+      notifiedAlerts.add('Humidity too high'); // Add to notified list
     }
-  }
-
-  void showAlert(String title, String message) {
-    // Show the alert with the appropriate title and message
-    setState(() {
-      alertTitle = title;
-      alertMessage = message;
-    });
-  }
-
-  void removeAlert() {
-    // Remove the alert message when the values are within the normal range
-    setState(() {
-      alertTitle = null;
-      alertMessage = null;
-    });
   }
 
   @override
@@ -144,13 +146,7 @@ class _DashboardContentState extends State<DashboardContent> {
               ],
             ),
 
-            // Example list of items (can be a list of recent alerts, logs, etc.)
-            // ListTile(
-            //   leading: Icon(Icons.warning, color: Colors.red),
-            //   title: Text('Alert: High Temperature'),
-            //   subtitle: Text('The temperature has exceeded the safe limit!'),
-            // ),
-            // ListView.builder to display multiple alerts
+            // Display alerts if any
             if (alerts.isNotEmpty)
               ListView.builder(
                 shrinkWrap: true, // To avoid overflow issues
