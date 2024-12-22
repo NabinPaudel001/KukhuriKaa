@@ -4,6 +4,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
+  const NewsPage({super.key});
+
   @override
   _NewsPageState createState() => _NewsPageState();
 }
