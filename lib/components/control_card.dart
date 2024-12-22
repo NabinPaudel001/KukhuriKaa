@@ -18,6 +18,7 @@ class ControlCard extends StatefulWidget {
 class _ControlCardState extends State<ControlCard> {
   late bool isControlOn;
 
+  @override
   void initState() {
     super.initState();
     isControlOn = widget.initialState; // Set initial toggle state

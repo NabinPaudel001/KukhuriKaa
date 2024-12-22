@@ -23,14 +23,30 @@ dependencies:
   web_socket_channel: ^3.0.1
   http: ^1.2.2
   url_launcher: ^6.3.1
+  flutter_local_notifications: ^18.0.1
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.2
+  flutter_native_splash: ^2.4.3
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/kukhurikaa_icon_512x512.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/Kukhurikaa_logo_transparent.png"
+    
 flutter:
   uses-material-design: true
   assets:
     - model/news_predictions.json
-    # - assets/images
+    - assets/kukhurikaa_icon_512x512.png
+    - assets/kukhurikaa_logo_transparent.png
+    - assets/kukhurikaa_icon.png
+    - assets/kukhurikaa_logo_white.png
+    - assets/kukhuriKaa_logo_transparent_splash.png
