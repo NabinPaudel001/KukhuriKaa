@@ -7,7 +7,6 @@ const port = process.env.PORT;
 
 // Create an HTTP server to use with WebSocket
 const server = http.createServer(app);
-
 // Set up WebSocket server
 const wss = new WebSocketServer({ server });
 
@@ -30,9 +29,10 @@ wss.on("connection", (ws) => {
     }
   });
 
-  ws.on("close", () => {
-    console.log("WebSocket client disconnected");
+  wss.on("connection", (ws, req) => {
+    console.log(`WebSocket connection from: ${req.socket.remoteAddress}`);
   });
+  
 });
 
 
